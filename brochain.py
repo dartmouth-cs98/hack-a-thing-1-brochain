@@ -1,6 +1,9 @@
 import hashlib
 import json
 from time import time
+from uuid import uuid4
+
+from flask import Flask
 
 class Brochain(object):
     def __init__(self):
@@ -63,4 +66,57 @@ class Brochain(object):
         """
         returns the last bro in the chain
         """
-        pass
+        return self.chain[-1]
+
+
+    def proof_of_work(self, last_proof):
+        """
+        Simple Proof of Work Algorithm
+
+        TODO: make number of 0s a variable 
+        """
+
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof, proof):
+        """
+        Validates the Proof
+        """
+
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
+
+
+# instantiate node 
+# TODO: separate into separate files
+app = Flask(__name__)
+
+# generate globally unique address for this brode
+brode_id = str(uuid4()).replace('-', '')
+
+brochain = Brochain()
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    return "mining a new bro"
+
+@app.route('/transactions/new', methods=['POST'])
+def new_bump():
+    return "adding a new bump"
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    reponse = {
+        'chain': brochain.chain,
+        'length': len(brochain.chain),
+    }
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
