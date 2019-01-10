@@ -218,7 +218,7 @@ def register_nodes():
         return "Error: Please supply a valid list of brodes", 400
 
     for brode in brodes:
-        brochain.register_node(brode)
+        brochain.register_brode(brode)
 
     response = {
         'message': 'New brodes have been added',
