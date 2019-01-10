@@ -10,6 +10,9 @@ class Brochain(object):
     def __init__(self):
         self.chain = []
         self.current_bumps = []
+        # Create the genesis bro
+        self.new_bro(previous_hash=1, proof=100)
+
         self.brodes = set()
     
     def new_bro(self, proof, previous_hash=None):
@@ -24,7 +27,7 @@ class Brochain(object):
         bro = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'transactions': self.current_bumps,
+            'bumps': self.current_bumps,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
@@ -167,7 +170,7 @@ def mine():
 
     # reward for finding the proof, always from sender 0
     # TODO: adjust amount accordingly?
-    brochain.new_transaction(
+    brochain.new_bump(
         sender="0",
         recipient=brode_id,
         amount=1
